@@ -10,6 +10,7 @@ require_relative 'sprite_manager'
 require_relative 'sprite'
 require_relative 'renderer'
 require_relative 'camera_filter'
+require_relative 'follow_camera_filter'
 
 class GameWindow < Gosu::Window
 
@@ -21,16 +22,17 @@ class GameWindow < Gosu::Window
     @physics_manager = PhysicsManager.new
     @sprite_manager = SpriteManager.new
     @renderer = Renderer.new(self)
-    @filter = CameraFilter.new(-80,0, 2, 2)
-    
-    player = Player.new(1, 50, 50)
-    player_body = PhysicsBody.new(1, 50,50,23,32)
-    @sprite = Gosu::Image.new(self, "player.png", false)
-    puts "failed" unless @sprite
-    player_sprite = Sprite.new(1, @sprite, 50, 50, 0)
+    @filter = FollowCameraFilter.new(480, 360, 1, -80,0)
 
-    player2 = Player.new(2, 73, 50)
-    player2_body = PhysicsBody.new(2, 100, 50, 23, 32)
+    player = Player.new(1, 50, 50)
+    player_body = PhysicsBody.new(1, 50,50,23,23)
+    @sprite = Gosu::Image.new(self, "player.png", false)
+    spritesheet = Gosu::Image.new(self, "spritesheet.png", false)
+    puts "failed" unless @sprite
+    player_sprite = Sprite.new(1, spritesheet, 50, 50, 0)
+
+    player2 = Player.new(2, 100, 150)
+    player2_body = PhysicsBody.new(2, 100, 150, 23, 23)
     player2_sprite = Sprite.new(2, @sprite, 100, 50, 0)
     @object_manager.add(player2)
     @physics_manager.add(player2_body)
@@ -44,7 +46,7 @@ class GameWindow < Gosu::Window
 
     20.times do |x|
       block_sprite = Sprite.new(x+3, brick_image, x*23, 0)
-      block_body = PhysicsBody.new(x+3,x*23,0, 23, 32)
+      block_body = PhysicsBody.new(x+3,x*23,0, 23, 23)
       @physics_manager.add(block_body)
       @sprite_manager.add(block_sprite)
     end

@@ -15,6 +15,7 @@ class Player < GameObject
     @position += @velocity 
 
     message = {id: @id, vector: @position}
+    puts "pushing"
     EventBus.push(:object_position, message)
   end
 

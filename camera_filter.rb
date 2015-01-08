@@ -9,10 +9,6 @@ class CameraFilter
     @rot = rot
   end
 
-  def filt(sprites)
-    sprites
-  end
-
   def filter(sprites)
     transformed = []
     sprites.each do |sprite|
