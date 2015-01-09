@@ -30,10 +30,10 @@ class EventBus
 
   def self.push(type, data)
     message = Message.new(type, data)
-    @@publisher[:all].notify(message)
+    @@publisher[:all].notify(self, message)
 
     @@publisher.select { |filter,publisher| filter == type }.each_value do |pub|
-      pub.notify(message)
+      pub.notify(self, message)
     end
   end
 end

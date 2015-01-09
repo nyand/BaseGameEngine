@@ -12,7 +12,7 @@ class Publisher
     @subscribers.delete(subscriber)
   end
 
-  def notify(message)
-    @subscribers.each { |sub| sub.receive(self, message) }
+  def notify(sender, message)
+    @subscribers.each { |sub| sub.receive(sender, message) }
   end
 end

@@ -15,8 +15,8 @@ class CameraFilter
       clone = sprite.clone
       clone.x *= @scale_x
       clone.y *= @scale_y
-      clone.x -= @translate_x
-      clone.y -= @translate_y
+      clone.x -= @translate_x*@scale_x
+      clone.y -= @translate_y*@scale_y
       clone.scale_x *= @scale_x
       clone.scale_y *= @scale_y
       #code for rotation - matrix rotation

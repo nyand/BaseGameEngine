@@ -1,6 +1,7 @@
 require 'gosu'
 require_relative 'player'
 require_relative 'object_manager'
+require_relative 'movement_component'
 require_relative 'keyboard_publisher'
 require_relative 'event_bus'
 require_relative 'message'
@@ -10,6 +11,7 @@ require_relative 'sprite_manager'
 require_relative 'sprite'
 require_relative 'renderer'
 require_relative 'camera_filter'
+require_relative 'move_camera_filter'
 require_relative 'follow_camera_filter'
 require_relative 'z_layer_filter'
 
@@ -23,27 +25,34 @@ class GameWindow < Gosu::Window
     @physics_manager = PhysicsManager.new
     @sprite_manager = SpriteManager.new
     @renderer = Renderer.new(self)
-    @filter = FollowCameraFilter.new(480, 360, 1, -80,0)
+    #@filter = FollowCameraFilter.new(480, 360, 1, -80,0)
+    @filter = MoveCameraFilter.new(500, 500)
     @z_filter = ZLayerFilter.new
 
-    player = Player.new(1, 50, 50)
-    player_body = PhysicsBody.new(1, 50,50,23,23)
-    @sprite = Gosu::Image.new(self, "player.png", false)
-    spritesheet = Gosu::Image.new(self, "spritesheet.png", false)
-    puts "failed" unless @sprite
-    player_sprite = Sprite.new(1, @sprite, 50, 50, 0)
+    #load up sprties
+    sprite = Gosu::Image.new(self, "player.png", false)
 
-    player2 = Player.new(2, 100, 150)
-    player2_body = PhysicsBody.new(2, 100, 150, 23, 23)
-    player2_sprite = Sprite.new(2, @sprite, 100, 50, 0)
-    @object_manager.add(player2)
-    @physics_manager.add(player2_body)
-    @sprite_manager.add(player2_sprite)
-
+    #create first player component
+    player = GameObject.new(1)
+    move_comp = MovementComponent.new(player, 50, 50, 0)
+    player.add(move_comp)
+    player_body = PhysicsBody.new(player.id, 50,50,23,23)
+    player_sprite = Sprite.new(player.id, sprite, 50, 50, 0)
     @physics_manager.add(player_body)
     @object_manager.add(player)
     @sprite_manager.add(player_sprite)
 
+    #create second player components
+    player2 = GameObject.new(2)
+    move_comp2 = MovementComponent.new(player2, 100, 150)
+    player2.add(move_comp2)
+    player2_body = PhysicsBody.new(player2.id, 100, 150, 23, 23)
+    player2_sprite = Sprite.new(player2.id, sprite, 100, 50, 0)
+    @object_manager.add(player2)
+    @physics_manager.add(player2_body)
+    @sprite_manager.add(player2_sprite)
+
+    #create blocks
     brick_image = Gosu::Image.new(self, "block.png", false)
 
     20.times do |x|
