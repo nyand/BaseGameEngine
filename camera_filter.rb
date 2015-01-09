@@ -1,7 +1,9 @@
 class CameraFilter
 
-  attr_accessor :translate_x, :translate_y, :scale_x, :scale_y, :rot
-  def initialize(translate_x = 0, translate_y = 0, scale_x = 1, scale_y = 1, rot = 0)
+  attr_accessor :translate_x, :translate_y, :scale_x, :scale_y, :rot, :width, :height
+  def initialize(width, height, translate_x = 0, translate_y = 0, scale_x = 1, scale_y = 1, rot = 0)
+    @width = width
+    @height = height
     @translate_x = translate_x
     @translate_y = translate_y
     @scale_x = scale_x

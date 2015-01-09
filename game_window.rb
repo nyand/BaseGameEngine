@@ -11,23 +11,28 @@ require_relative 'sprite_manager'
 require_relative 'sprite'
 require_relative 'renderer'
 require_relative 'camera_filter'
-require_relative 'move_camera_filter'
+require_relative 'smooth_move_camera_filter'
 require_relative 'follow_camera_filter'
 require_relative 'z_layer_filter'
+require_relative 'smooth_follow_filter'
 
 class GameWindow < Gosu::Window
 
   def initialize
-    super 480, 360, false
+    super 640, 480, false
     @object_manager = ObjectManager.new
     @keyboard_publisher = KeyboardPublisher.new
 
     @physics_manager = PhysicsManager.new
     @sprite_manager = SpriteManager.new
+
+    #create render and camera filters
     @renderer = Renderer.new(self)
     #@filter = FollowCameraFilter.new(480, 360, 1, -80,0)
-    @filter = MoveCameraFilter.new(500, 500)
+    @filter = SmoothMoveCameraFilter.new(320, 240, 640, 480, 50, 50, 2, 2)
     @z_filter = ZLayerFilter.new
+    @smooth_follow = SmoothFollowFilter.new(1)
+
 
     #load up sprties
     sprite = Gosu::Image.new(self, "player.png", false)
@@ -77,6 +82,7 @@ class GameWindow < Gosu::Window
   end
 
   def draw
+    @smooth_follow.track(@sprite_manager.sprites, @filter)
     @renderer.draw(@z_filter.filter(@filter.filter(@sprite_manager.sprites)))
   end
 

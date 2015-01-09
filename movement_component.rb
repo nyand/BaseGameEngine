@@ -16,7 +16,6 @@ class MovementComponent < Component
     @prev = Vector[@position[0], @position[1], @position[2]]
     @position += @velocity
     
-    puts "(#{@position[0]},#{@position[1]})"
     message = {id: @owner.id, vector: @position}
     EventBus.push(:object_position, message)
   end
