@@ -1,6 +1,5 @@
 class SpriteManager
 
-  attr_reader :sprites
   def initialize
     @sprites = []
   end
@@ -11,6 +10,12 @@ class SpriteManager
   
   def remove(sprite)
     @sprites.remove(sprite)
+  end
+
+  def sprites
+    clones = []
+    @sprites.each { |sprite| clones << sprite.clone }
+    clones
   end
 
   def update

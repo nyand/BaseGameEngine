@@ -15,19 +15,18 @@ class FollowCameraFilter < CameraFilter
     transformed = []
     sprites.each do |sprite|
 
-      clone = sprite.clone
-      clone.x *= @scale_x
-      clone.y *= @scale_y
-      if @follow_id && clone.id == @follow_id
-        @translate_x = clone.x + clone.sprite.width/2 - width/2
-        @translate_y = clone.y + clone.sprite.height/2 - height/2
+      sprite.x *= @scale_x
+      sprite.y *= @scale_y
+      if @follow_id && sprite.id == @follow_id
+        @translate_x = sprite.x + sprite.sprite.width/2 - width/2
+        @translate_y = sprite.y + sprite.sprite.height/2 - height/2
       end
-      clone.x -= @translate_x
-      clone.y -= @translate_y
-      clone.scale_x *= @scale_x
-      clone.scale_y *= @scale_y
+      sprite.x -= @translate_x
+      sprite.y -= @translate_y
+      sprite.scale_x *= @scale_x
+      sprite.scale_y *= @scale_y
       #code for rotation - matrix rotation
-      transformed << clone
+      transformed << sprite
     end
     transformed
   end

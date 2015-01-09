@@ -11,6 +11,7 @@ require_relative 'sprite'
 require_relative 'renderer'
 require_relative 'camera_filter'
 require_relative 'follow_camera_filter'
+require_relative 'z_layer_filter'
 
 class GameWindow < Gosu::Window
 
@@ -23,13 +24,14 @@ class GameWindow < Gosu::Window
     @sprite_manager = SpriteManager.new
     @renderer = Renderer.new(self)
     @filter = FollowCameraFilter.new(480, 360, 1, -80,0)
+    @z_filter = ZLayerFilter.new
 
     player = Player.new(1, 50, 50)
     player_body = PhysicsBody.new(1, 50,50,23,23)
     @sprite = Gosu::Image.new(self, "player.png", false)
     spritesheet = Gosu::Image.new(self, "spritesheet.png", false)
     puts "failed" unless @sprite
-    player_sprite = Sprite.new(1, spritesheet, 50, 50, 0)
+    player_sprite = Sprite.new(1, @sprite, 50, 50, 0)
 
     player2 = Player.new(2, 100, 150)
     player2_body = PhysicsBody.new(2, 100, 150, 23, 23)
@@ -66,7 +68,7 @@ class GameWindow < Gosu::Window
   end
 
   def draw
-    @renderer.draw(@filter.filter(@sprite_manager.sprites))
+    @renderer.draw(@z_filter.filter(@filter.filter(@sprite_manager.sprites)))
   end
 
   def button_down(id)
