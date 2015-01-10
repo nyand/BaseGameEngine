@@ -72,10 +72,14 @@ class GameWindow < Gosu::Window
     brick_image = Gosu::Image.new(self, "block.png", false)
 
     20.times do |x|
-      block_sprite = Sprite.new(x+3, brick_image, x*23, 0)
+      block_object = GameObject.new(x+3)
+      block_sprite = Sprite.new(block_object.id, brick_image, x*23, 0)
+      block_sprite_comp = SpriteComponent.new(block_object, block_sprite)
+      block_object.add(block_sprite_comp)
       block_body = PhysicsBody.new(x+3,x*23,0, 22, 23)
       @physics_manager.add(block_body)
       @sprite_manager.add(block_sprite)
+      @object_manager.add(block_object)
     end
 
     EventBus.register(player, :keyboard, :physics_manager)

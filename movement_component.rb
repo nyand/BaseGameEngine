@@ -15,7 +15,7 @@ class MovementComponent < Component
     @prev = Vector[@position[0], @position[1], @position[2]]
     @position += @velocity
     
-    message = {id: @owner.id, vector: @position}
+    message = {id: @owner.id, vector: @position, velocity: @velocity, direction: @direction}
     self.bus.push(:object_position, message)
   end
 
@@ -24,7 +24,7 @@ class MovementComponent < Component
       #p message.data[:object1]
       if message.data[:object1] == @owner.id 
         @position = @prev 
-        update_message = {id: @owner.id, vector: @position}
+        update_message = {id: @owner.id, vector: @position, velocity: @velocity, direction: @direction}
         self.bus.push(:object_position, update_message)
       end
     end
