@@ -21,7 +21,7 @@ class PhysicsManager
     @bodies.each do |body1|
       @bodies.each do |body2|
         if !body1.equal?(body2) && aabb_collision?(body1, body2)
-          message = {event: "collision", object1: body1.id, object2: body2.id}
+          message = {id: PhysicsManager.class, event: "collision", object1: body1.id, object2: body2.id}
           EventBus.push(:physics_manager, message)
         end
       end

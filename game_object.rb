@@ -25,10 +25,12 @@ class GameObject
   end
 
   def receive(sender, message)
-    if sender == EventBus && message.data[:id] != @id
+    if sender == EventBus && message.data[:id] != @id && message.data[:object_relay] != true
+      message.data[:object_relay] = true
       @bus.push(message.type, message.data)
-    elsif sender == @bus
-      EventBus.push(sender, message.data)
+      p message.data
+    elsif sender == @bus && message.data[:object_relay] != true
+      EventBus.push(message.type, message.data)
     end
   end
 

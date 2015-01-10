@@ -6,7 +6,6 @@ class MovementComponent < Component
   attr_reader :position
   def initialize(owner, x = 0, y = 0, z = 0)
     super(owner) 
-    @owner.bus.register(self)
     @position = Vector[x, y, z]
     @velocity = Vector[0, 0, 0]
     @direction = nil
@@ -17,15 +16,16 @@ class MovementComponent < Component
     @position += @velocity
     
     message = {id: @owner.id, vector: @position}
-    EventBus.push(:object_position, message)
+    self.bus.push(:object_position, message)
   end
 
   def receive(sender, message)
     if message.type == :physics_manager
+      #p message.data[:object1]
       if message.data[:object1] == @owner.id 
         @position = @prev 
         update_message = {id: @owner.id, vector: @position}
-        EventBus.push(:object_position, update_message)
+        self.bus.push(:object_position, update_message)
       end
     end
 

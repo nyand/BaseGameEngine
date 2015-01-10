@@ -19,6 +19,7 @@ class SpriteManager
   end
 
   def update
+    @sprites.each { |sprite| sprite.update }
   end
 
   def receive_message(sender, message)

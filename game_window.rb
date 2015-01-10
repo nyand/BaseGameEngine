@@ -9,12 +9,16 @@ require_relative 'physics_manager'
 require_relative 'physics_body'
 require_relative 'sprite_manager'
 require_relative 'sprite'
+require_relative 'sprite_component'
 require_relative 'renderer'
 require_relative 'camera_filter'
 require_relative 'smooth_move_camera_filter'
 require_relative 'follow_camera_filter'
 require_relative 'z_layer_filter'
 require_relative 'smooth_follow_filter'
+require_relative 'animation'
+require_relative 'number_graph'
+require_relative 'number_graph_end'
 
 class GameWindow < Gosu::Window
 
@@ -34,25 +38,32 @@ class GameWindow < Gosu::Window
     @smooth_follow = SmoothFollowFilter.new(1)
 
 
-    #load up sprties
-    sprite = Gosu::Image.new(self, "player.png", false)
+    #load up sprite animations
+    anim = Gosu::Image.load_tiles(self, "player_walk_down.png", -2, -1, false)
+    
 
     #create first player component
     player = GameObject.new(1)
-    move_comp = MovementComponent.new(player, 50, 50, 0)
+    move_comp = MovementComponent.new(player, 100, 100, 0)
     player.add(move_comp)
-    player_body = PhysicsBody.new(player.id, 50,50,23,23)
-    player_sprite = Sprite.new(player.id, sprite, 50, 50, 0)
+    player_body = PhysicsBody.new(player.id, 100,100,23,23)
+    player_anim_ng = NumberGraph.new
+    player_anim_ng.define(0,1)
+    player_anim = Animation.new(player.id, anim, player_anim_ng, 10)
+    player_sprite_component = SpriteComponent.new(player, player_anim)
+    player.add(player_sprite_component)
     @physics_manager.add(player_body)
     @object_manager.add(player)
-    @sprite_manager.add(player_sprite)
+    @sprite_manager.add(player_anim)
 
     #create second player components
     player2 = GameObject.new(2)
     move_comp2 = MovementComponent.new(player2, 100, 150)
     player2.add(move_comp2)
     player2_body = PhysicsBody.new(player2.id, 100, 150, 23, 23)
-    player2_sprite = Sprite.new(player2.id, sprite, 100, 50, 0)
+    player2_sprite = Sprite.new(player2.id, anim[1], 100, 50, 0)
+    player2_sprite_component = SpriteComponent.new(player2, player2_sprite)
+    player2.add(player2_sprite_component)
     @object_manager.add(player2)
     @physics_manager.add(player2_body)
     @sprite_manager.add(player2_sprite)
@@ -62,7 +73,7 @@ class GameWindow < Gosu::Window
 
     20.times do |x|
       block_sprite = Sprite.new(x+3, brick_image, x*23, 0)
-      block_body = PhysicsBody.new(x+3,x*23,0, 23, 23)
+      block_body = PhysicsBody.new(x+3,x*23,0, 22, 23)
       @physics_manager.add(block_body)
       @sprite_manager.add(block_sprite)
     end
@@ -71,14 +82,13 @@ class GameWindow < Gosu::Window
     EventBus.register(player2, :physics_manager)
     EventBus.register(player_body, :object_position)
     EventBus.register(player2_body, :object_position)
-    EventBus.register(player_sprite, :object_position)
-    EventBus.register(player2_sprite, :object_position)
 
   end
   
   def update
     @object_manager.update
     @physics_manager.update
+    @sprite_manager.update
   end
 
   def draw
