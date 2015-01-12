@@ -19,38 +19,58 @@ require_relative 'smooth_follow_filter'
 require_relative 'animation'
 require_relative 'number_graph'
 require_relative 'number_graph_end'
+require_relative 'image_manager'
+require_relative 'service_locator'
+require_relative 'player_sprite_component'
+require_relative 'visible_filter'
 
 class GameWindow < Gosu::Window
 
   def initialize
     super 640, 480, false
+
+    #
     @object_manager = ObjectManager.new
     @keyboard_publisher = KeyboardPublisher.new
 
     @physics_manager = PhysicsManager.new
     @sprite_manager = SpriteManager.new
 
+    #create image manager and add to service locator
+    @image_manager = ImageManager.new(self)
+
+    ServiceLocator.image_manager=@image_manager
+    ServiceLocator.global_event_bus=EventBus
+
+    #load images
+    ServiceLocator.image_manager.load("player_walk_down.png", -2, -1)
+    ServiceLocator.image_manager.load("player_walk_up.png", -2, -1) 
+    ServiceLocator.image_manager.load("player_walk_right.png", -2, -1) 
+    ServiceLocator.image_manager.load("player_walk_left.png", -2, -1) 
+    ServiceLocator.image_manager.load("block.png")
+    
+    
     #create render and camera filters
     @renderer = Renderer.new(self)
     #@filter = FollowCameraFilter.new(480, 360, 1, -80,0)
     @filter = SmoothMoveCameraFilter.new(320, 240, 640, 480, 50, 50, 2, 2)
     @z_filter = ZLayerFilter.new
     @smooth_follow = SmoothFollowFilter.new(1)
+    @visible_filter = VisibleFilter.new
 
 
     #load up sprite animations
-    anim = Gosu::Image.load_tiles(self, "player_walk_down.png", -2, -1, false)
-    
+    anim =  ServiceLocator.image_manager.get("player_walk_down.png")
 
     #create first player component
-    player = GameObject.new(1)
+    player = Player.new(1)
     move_comp = MovementComponent.new(player, 100, 100, 0)
     player.add(move_comp)
     player_body = PhysicsBody.new(player.id, 100,100,23,23)
     player_anim_ng = NumberGraph.new
     player_anim_ng.define(0,1)
     player_anim = Animation.new(player.id, anim, player_anim_ng, 10)
-    player_sprite_component = SpriteComponent.new(player, player_anim)
+    player_sprite_component = PlayerSpriteComponent.new(player, player_anim)
     player.add(player_sprite_component)
     @physics_manager.add(player_body)
     @object_manager.add(player)
@@ -69,7 +89,7 @@ class GameWindow < Gosu::Window
     @sprite_manager.add(player2_sprite)
 
     #create blocks
-    brick_image = Gosu::Image.new(self, "block.png", false)
+    brick_image = ServiceLocator.image_manager.get("block.png") 
 
     20.times do |x|
       block_object = GameObject.new(x+3)
@@ -97,7 +117,7 @@ class GameWindow < Gosu::Window
 
   def draw
     @smooth_follow.track(@sprite_manager.sprites, @filter)
-    @renderer.draw(@z_filter.filter(@filter.filter(@sprite_manager.sprites)))
+    @renderer.draw(@z_filter.filter(@filter.filter(@visible_filter.filter(@sprite_manager.sprites))))
   end
 
   def button_down(id)

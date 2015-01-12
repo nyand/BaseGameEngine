@@ -28,7 +28,6 @@ class GameObject
     if sender == EventBus && message.data[:id] != @id && message.data[:object_relay] != true
       message.data[:object_relay] = true
       @bus.push(message.type, message.data)
-      p message.data
     elsif sender == @bus && message.data[:object_relay] != true
       EventBus.push(message.type, message.data)
     end

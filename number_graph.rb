@@ -6,6 +6,13 @@ class NumberGraph
     @previous = -1
   end
 
+
+  def goto(number)
+    @previous = @index
+    @index = number % @graph.count
+    @graph[@index]
+  end
+
   def next!
     raise 'NumberGraph undefined' if @index == -1
 
